@@ -94,7 +94,7 @@ export default function PublicSurvey() {
 
       <div className="container" style={{ maxWidth: 640 }}>
         <div className="hero-panel">
-          <header style={{ textAlign: 'center', padding: '0.5em 0 0.5em' }}>
+          <header style={{ textAlign: 'center', padding: '0 0 0.5em' }}>
             <img src={logo} alt="Nina Studio" className="logo-header" />
           </header>
 

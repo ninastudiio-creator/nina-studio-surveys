@@ -227,7 +227,7 @@ textarea {
   left: 0;
   width: 100vw;
   height: 100dvh;
-  background-image: url('./assets/hero.jpg');
+  background-image: linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)), url('./assets/hero.jpg');
   background-size: cover;
   background-position: right center;
   background-repeat: no-repeat;
@@ -237,6 +237,7 @@ textarea {
 .hero-page > .container {
   position: relative;
   z-index: 1;
+  padding-top: 1em;
 }
 
 @media (max-width: 640px) {
@@ -248,7 +249,7 @@ textarea {
 .hero-panel {
   background: transparent;
   border-radius: var(--radius);
-  padding: 1.5em 1.5em 0.5em;
+  padding: 0.5em 1.5em 0.5em;
 }
 
 @media (max-width: 640px) {
