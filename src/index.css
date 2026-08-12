@@ -248,16 +248,9 @@ textarea {
 }
 
 .hero-panel {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.72);
   border-radius: var(--radius);
-  padding: 0.5em 1.5em 0.5em;
-}
-
-@media (max-width: 640px) {
-  .hero-panel {
-    background: rgba(255, 255, 255, 0.72);
-    padding-top: 2em;
-  }
+  padding: 1.2em 1.5em 0.5em;
 }
 
 .hero-title {
