@@ -191,7 +191,7 @@ textarea {
 }
 
 .logo-header {
-  height: 64px;
+  height: 76px;
 }
 
 .logo-hero {
@@ -204,7 +204,7 @@ textarea {
 
 @media (min-width: 640px) {
   .logo-header {
-    height: 96px;
+    height: 112px;
   }
 
   .logo-hero {
