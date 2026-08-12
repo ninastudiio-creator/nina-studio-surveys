@@ -98,7 +98,9 @@ export default function PublicSurvey() {
             <img src={logo} alt="Nina Studio" className="logo-header" />
           </header>
 
-          <h1 style={{ textAlign: 'center', marginBottom: '0.9em' }}>{survey.title}</h1>
+          <h1 className="hero-title" style={{ textAlign: 'center', marginBottom: '0.9em' }}>
+            {survey.title}
+          </h1>
 
           {survey.intro && (
             <p style={{ whiteSpace: 'pre-wrap', color: 'var(--color-navy)', marginBottom: '1em' }}>{survey.intro}</p>

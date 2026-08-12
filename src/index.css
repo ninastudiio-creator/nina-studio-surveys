@@ -227,7 +227,7 @@ textarea {
   left: 0;
   width: 100vw;
   height: 100dvh;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)), url('./assets/hero.jpg');
+  background-image: linear-gradient(rgba(20, 24, 36, 0.18), rgba(20, 24, 36, 0.18)), url('./assets/hero.jpg');
   background-size: cover;
   background-position: right center;
   background-repeat: no-repeat;
@@ -243,6 +243,7 @@ textarea {
 @media (max-width: 640px) {
   .hero-bg-layer {
     background-position: 82% center;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.18)), url('./assets/hero.jpg');
   }
 }
 
@@ -255,6 +256,17 @@ textarea {
 @media (max-width: 640px) {
   .hero-panel {
     background: rgba(255, 255, 255, 0.72);
+    padding-top: 2em;
+  }
+}
+
+.hero-title {
+  font-size: 2rem;
+}
+
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 1.5rem;
   }
 }
 
