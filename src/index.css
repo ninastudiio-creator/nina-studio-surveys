@@ -217,24 +217,36 @@ textarea {
 }
 
 .hero-page {
+  position: relative;
   min-height: 100vh;
+}
+
+.hero-bg-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
   background-image: url('./assets/hero.jpg');
   background-size: cover;
-  background-position: 80% 32%;
+  background-position: right center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  z-index: 0;
+}
+
+.hero-page > .container {
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 640px) {
-  .hero-page {
-    background-position: 74% 20%;
+  .hero-bg-layer {
+    background-position: 82% center;
   }
 }
 
 .hero-panel {
-  background: rgba(244, 241, 235, 0.82);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(244, 241, 235, 0.72);
   border-radius: var(--radius);
   padding: 1.5em 1.5em 0.5em;
 }

@@ -90,6 +90,8 @@ export default function PublicSurvey() {
 
   return (
     <div className="hero-page">
+      <div className="hero-bg-layer" />
+
       <div className="container" style={{ maxWidth: 640 }}>
         <div className="hero-panel">
           <header style={{ textAlign: 'center', padding: '0.5em 0 0.5em' }}>
