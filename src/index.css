@@ -1,0 +1,217 @@
+@font-face {
+  font-family: 'Polin';
+  src: url('./assets/fonts/Polin-Regular.woff2') format('woff2'),
+       url('./assets/fonts/Polin-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Polin';
+  src: url('./assets/fonts/Polin-Bold.woff2') format('woff2'),
+       url('./assets/fonts/Polin-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-bg: #f4f1eb;
+  --color-navy: #192648;
+  --color-blue: #2546a4;
+  --color-blue-light: #cfe0f5;
+  --color-white: #ffffff;
+  --color-danger: #b3413d;
+  --color-border: #ddd6c8;
+  --color-text-muted: #6b6759;
+
+  --radius: 14px;
+  --shadow-card: 0 2px 16px rgba(25, 38, 72, 0.08);
+
+  font-family: 'Polin', 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-navy);
+  direction: rtl;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  margin: 0 0 0.5em;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--color-blue);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7em 1.6em;
+  font-size: 0.95rem;
+  font-weight: 700;
+  transition: opacity 0.15s ease, transform 0.05s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: var(--color-blue-light);
+  color: var(--color-navy);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-navy);
+  border: 1px solid var(--color-border);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.btn-sm {
+  padding: 0.45em 1.1em;
+  font-size: 0.85rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 1.2em;
+}
+
+.field label {
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
+.field .hint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.75em 1em;
+  background: var(--color-white);
+  color: var(--color-navy);
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  border-color: var(--color-blue);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 5em;
+}
+
+.card {
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 1.75em;
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2em 1.5em;
+}
+
+.logo-header {
+  height: 64px;
+}
+
+.logo-hero {
+  height: 80px;
+}
+
+.logo-notfound {
+  height: 72px;
+}
+
+@media (min-width: 640px) {
+  .logo-header {
+    height: 96px;
+  }
+
+  .logo-hero {
+    height: 130px;
+  }
+
+  .logo-notfound {
+    height: 100px;
+  }
+}
