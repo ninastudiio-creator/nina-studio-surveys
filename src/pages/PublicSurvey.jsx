@@ -116,8 +116,8 @@ export default function PublicSurvey() {
             q.type === 'section' ? (
               <h3
                 key={q.id}
-                className="hero-panel"
-                style={{ marginTop: '0.6em', marginBottom: '-0.4em', padding: '0.5em 1em', display: 'inline-block' }}
+                className="hero-chip"
+                style={{ marginTop: '0.6em', marginBottom: '-0.4em', display: 'inline-block' }}
               >
                 {q.label}
               </h3>

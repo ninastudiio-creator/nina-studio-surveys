@@ -246,7 +246,19 @@ textarea {
 }
 
 .hero-panel {
-  background: rgba(244, 241, 235, 0.72);
+  background: transparent;
   border-radius: var(--radius);
   padding: 1.5em 1.5em 0.5em;
+}
+
+@media (max-width: 640px) {
+  .hero-panel {
+    background: rgba(255, 255, 255, 0.72);
+  }
+}
+
+.hero-chip {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius);
+  padding: 0.5em 1em;
 }
