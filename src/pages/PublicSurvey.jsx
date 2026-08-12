@@ -89,26 +89,34 @@ export default function PublicSurvey() {
   }
 
   return (
-    <div>
-      <header style={{ textAlign: 'center', padding: '2em 1em 0.5em' }}>
-        <img src={logo} alt="Nina Studio" className="logo-header" />
-      </header>
-
+    <div className="hero-page">
       <div className="container" style={{ maxWidth: 640 }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '0.9em' }}>{survey.title}</h1>
+        <div className="hero-panel">
+          <header style={{ textAlign: 'center', padding: '0.5em 0 0.5em' }}>
+            <img src={logo} alt="Nina Studio" className="logo-header" />
+          </header>
 
-        {survey.intro && (
-          <p style={{ whiteSpace: 'pre-wrap', color: 'var(--color-navy)', marginBottom: '1em' }}>{survey.intro}</p>
-        )}
+          <h1 style={{ textAlign: 'center', marginBottom: '0.9em' }}>{survey.title}</h1>
 
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginBottom: '2em' }}>
-          אפשר למלא בכמה פעמים שרוצים — התשובות נשמרות אוטומטית, ואפשר לחזור לאותו קישור ולערוך בכל זמן.
-        </p>
+          {survey.intro && (
+            <p style={{ whiteSpace: 'pre-wrap', color: 'var(--color-navy)', marginBottom: '1em' }}>{survey.intro}</p>
+          )}
+
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', marginBottom: '1em' }}>
+            אפשר למלא בכמה פעמים שרוצים — התשובות נשמרות אוטומטית, ואפשר לחזור לאותו קישור ולערוך בכל זמן.
+          </p>
+        </div>
+
+        <div style={{ height: '1.3em' }} />
 
         <form onSubmit={(e) => e.preventDefault()} style={{ display: 'flex', flexDirection: 'column', gap: '1.3em' }}>
           {survey.questions.map((q) =>
             q.type === 'section' ? (
-              <h3 key={q.id} style={{ marginTop: '0.6em', marginBottom: '-0.4em' }}>
+              <h3
+                key={q.id}
+                className="hero-panel"
+                style={{ marginTop: '0.6em', marginBottom: '-0.4em', padding: '0.5em 1em', display: 'inline-block' }}
+              >
                 {q.label}
               </h3>
             ) : (

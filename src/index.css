@@ -215,3 +215,26 @@ textarea {
     height: 100px;
   }
 }
+
+.hero-page {
+  min-height: 100vh;
+  background-image: url('./assets/hero.jpg');
+  background-size: cover;
+  background-position: 80% 32%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+@media (max-width: 640px) {
+  .hero-page {
+    background-position: 74% 20%;
+  }
+}
+
+.hero-panel {
+  background: rgba(244, 241, 235, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: var(--radius);
+  padding: 1.5em 1.5em 0.5em;
+}
