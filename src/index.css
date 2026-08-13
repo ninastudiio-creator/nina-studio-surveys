@@ -250,7 +250,7 @@ textarea {
 .hero-panel {
   background: rgba(255, 255, 255, 0.72);
   border-radius: var(--radius);
-  padding: 1.2em 1.5em 0.5em;
+  padding: 2.2em 1.5em 0.5em;
 }
 
 .hero-title {

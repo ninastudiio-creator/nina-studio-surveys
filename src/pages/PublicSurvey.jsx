@@ -93,7 +93,7 @@ export default function PublicSurvey() {
       <div className="hero-bg-layer" />
 
       <div className="container" style={{ maxWidth: 640 }}>
-        <header style={{ textAlign: 'center', padding: '0 0 2em' }}>
+        <header style={{ textAlign: 'center', padding: '0 0 0.75em' }}>
           <img src={logo} alt="Nina Studio" className="logo-header" />
         </header>
 
