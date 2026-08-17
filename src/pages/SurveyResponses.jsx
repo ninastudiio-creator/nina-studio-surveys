@@ -52,8 +52,8 @@ export default function SurveyResponses() {
 
   return (
     <AdminLayout>
-      <Link to={`/clients/${clientId}`} style={{ fontSize: '0.9rem' }}>
-        ← חזרה ללקוח
+      <Link to={`/clients/${clientId}/survey`} style={{ fontSize: '0.9rem' }}>
+        ← חזרה לשאלון
       </Link>
       <h1 style={{ marginTop: '0.5em' }}>{survey.title}</h1>
 

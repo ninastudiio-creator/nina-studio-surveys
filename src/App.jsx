@@ -3,8 +3,10 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import ClientsList from './pages/ClientsList'
 import ClientDetail from './pages/ClientDetail'
+import SurveyHub from './pages/SurveyHub'
 import SurveyEditor from './pages/SurveyEditor'
 import SurveyResponses from './pages/SurveyResponses'
+import SummaryEditor from './pages/SummaryEditor'
 import PublicSurvey from './pages/PublicSurvey'
 
 export default function App() {
@@ -27,6 +29,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <ClientDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:clientId/summary"
+          element={
+            <ProtectedRoute>
+              <SummaryEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:clientId/survey"
+          element={
+            <ProtectedRoute>
+              <SurveyHub />
             </ProtectedRoute>
           }
         />

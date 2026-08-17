@@ -1,18 +1,39 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/AdminLayout'
 
 const SAVE_DELAY = 800
 
+function instagramHref(value) {
+  if (!value?.trim()) return null
+  const trimmed = value.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  return `https://instagram.com/${trimmed.replace(/^@/, '')}`
+}
+
+const SurveyTileIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <rect x="4" y="3" width="16" height="18" rx="2" />
+    <path d="M8 8h8M8 12h8M8 16h5" strokeLinecap="round" />
+  </svg>
+)
+
+const SummaryTileIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+    <path d="M4 20V6a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
+    <path d="M14 4v5a1 1 0 0 0 1 1h5" />
+    <path d="M8 13h8M8 17h5" strokeLinecap="round" />
+  </svg>
+)
+
 export default function ClientDetail() {
   const { clientId } = useParams()
-  const navigate = useNavigate()
 
   const [client, setClient] = useState(null)
+  const [fields, setFields] = useState({ phone: '', email: '', instagram: '', project_start_date: '' })
   const [survey, setSurvey] = useState(undefined) // undefined = loading, null = none yet
-  const [summary, setSummary] = useState('')
-  const [saveState, setSaveState] = useState('idle') // idle | saving | saved
+  const [fieldsSaveState, setFieldsSaveState] = useState('idle') // idle | saving | saved
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
@@ -21,7 +42,7 @@ export default function ClientDetail() {
   async function load() {
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id, name, discovery_summary')
+      .select('id, name, phone, email, instagram, project_start_date, discovery_summary')
       .eq('id', clientId)
       .single()
 
@@ -30,11 +51,16 @@ export default function ClientDetail() {
       return
     }
     setClient(clientData)
-    setSummary(clientData.discovery_summary || '')
+    setFields({
+      phone: clientData.phone || '',
+      email: clientData.email || '',
+      instagram: clientData.instagram || '',
+      project_start_date: clientData.project_start_date || '',
+    })
 
     const { data: surveyData } = await supabase
       .from('surveys')
-      .select('id, title, public_token, responses(updated_at)')
+      .select('id, public_token, responses(updated_at)')
       .eq('client_id', clientId)
       .maybeSingle()
 
@@ -45,21 +71,27 @@ export default function ClientDetail() {
     load()
   }, [clientId])
 
-  const persistSummary = useCallback(
-    (value) => {
+  const persistFields = useCallback(
+    (nextFields) => {
       if (saveTimer.current) clearTimeout(saveTimer.current)
-      setSaveState('saving')
+      setFieldsSaveState('saving')
       saveTimer.current = setTimeout(async () => {
-        const { error } = await supabase.from('clients').update({ discovery_summary: value }).eq('id', clientId)
-        setSaveState(error ? 'idle' : 'saved')
+        const { error } = await supabase
+          .from('clients')
+          .update({ ...nextFields, project_start_date: nextFields.project_start_date || null })
+          .eq('id', clientId)
+        setFieldsSaveState(error ? 'idle' : 'saved')
       }, SAVE_DELAY)
     },
     [clientId]
   )
 
-  function handleSummaryChange(value) {
-    setSummary(value)
-    persistSummary(value)
+  function handleFieldChange(key, value) {
+    setFields((prev) => {
+      const next = { ...prev, [key]: value }
+      persistFields(next)
+      return next
+    })
   }
 
   function copyLink() {
@@ -67,16 +99,6 @@ export default function ClientDetail() {
     navigator.clipboard.writeText(url)
     setCopied(true)
     setTimeout(() => setCopied(false), 1800)
-  }
-
-  async function handleDeleteSurvey() {
-    if (!confirm('למחוק את השאלון? כל התשובות שנשמרו יימחקו.')) return
-    const { error } = await supabase.from('surveys').delete().eq('id', survey.id)
-    if (error) {
-      alert('מחיקה נכשלה')
-      return
-    }
-    setSurvey(null)
   }
 
   if (error) {
@@ -96,76 +118,101 @@ export default function ClientDetail() {
   }
 
   const answered = survey?.responses?.length > 0
+  const igHref = instagramHref(fields.instagram)
 
   return (
     <AdminLayout>
       <Link to="/" style={{ fontSize: '0.9rem' }}>
         ← חזרה ללקוחות שלי
       </Link>
-      <h1 style={{ marginTop: '0.5em' }}>{client.name}</h1>
 
-      <h3 style={{ marginTop: '1.5em' }}>השאלון</h3>
-      {survey === undefined && <p>טוען...</p>}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8em', marginTop: '0.5em' }}>
+        <h1 style={{ margin: 0 }}>{client.name}</h1>
+        {survey && (
+          <button className="btn btn-secondary btn-sm" onClick={copyLink}>
+            {copied ? 'הועתק!' : 'העתקת קישור השאלון'}
+          </button>
+        )}
+      </div>
 
-      {survey === null && (
-        <div className="card" style={{ textAlign: 'center' }}>
-          <p style={{ color: 'var(--color-text-muted)' }}>עדיין אין שאלון ללקוח הזה.</p>
-          <Link to={`/clients/${clientId}/survey/new`} className="btn btn-primary">
-            + יצירת שאלון
-          </Link>
-        </div>
-      )}
-
-      {survey && (
-        <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1em', flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.7em', marginBottom: '0.3em' }}>
-              <strong>{survey.title}</strong>
-              <span
-                style={{
-                  display: 'inline-block',
-                  padding: '0.25em 0.8em',
-                  borderRadius: 999,
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  background: answered ? 'var(--color-blue-light)' : 'var(--color-border)',
-                  color: 'var(--color-navy)',
-                }}
-              >
-                {answered ? 'נענה' : 'טרם נענה'}
-              </span>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: '0.5em', flexWrap: 'wrap' }}>
-            <button className="btn btn-secondary btn-sm" onClick={copyLink}>
-              {copied ? 'הועתק!' : 'העתקת קישור'}
-            </button>
-            <Link to={`/clients/${clientId}/survey/responses`} className="btn btn-ghost btn-sm">
-              תשובות
-            </Link>
-            <Link to={`/clients/${clientId}/survey/edit`} className="btn btn-ghost btn-sm">
-              עריכה
-            </Link>
-            <button className="btn btn-danger btn-sm" onClick={handleDeleteSurvey}>
-              מחיקה
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '2em' }}>
-        <h3 style={{ margin: 0 }}>סיכום שיחת אפיון</h3>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.8em' }}>
+        <h3 style={{ margin: 0 }}>פרטי לקוח</h3>
         <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-          {saveState === 'saving' ? 'שומר...' : saveState === 'saved' ? '✓ נשמר' : ''}
+          {fieldsSaveState === 'saving' ? 'שומר...' : fieldsSaveState === 'saved' ? '✓ נשמר' : ''}
         </span>
       </div>
-      <div className="card" style={{ marginTop: '0.6em' }}>
-        <textarea
-          value={summary}
-          onChange={(e) => handleSummaryChange(e.target.value)}
-          placeholder="רשמי כאן את הסיכום שלך מהשיחה עם הלקוחה — נקודות מפתח, החלטות, מה סוכם..."
-          style={{ minHeight: '14em', border: 'none', padding: 0 }}
-        />
+
+      <div className="card client-fields-grid" style={{ marginTop: '0.6em' }}>
+        <div className="field" style={{ marginBottom: 0 }}>
+          <label htmlFor="phone">טלפון</label>
+          <input
+            id="phone"
+            type="text"
+            value={fields.phone}
+            onChange={(e) => handleFieldChange('phone', e.target.value)}
+            placeholder="050-1234567"
+          />
+        </div>
+        <div className="field" style={{ marginBottom: 0 }}>
+          <label htmlFor="email">אימייל</label>
+          <input
+            id="email"
+            type="email"
+            value={fields.email}
+            onChange={(e) => handleFieldChange('email', e.target.value)}
+            placeholder="client@example.com"
+          />
+        </div>
+        <div className="field" style={{ marginBottom: 0 }}>
+          <label htmlFor="instagram">
+            אינסטגרם {igHref && (
+              <a href={igHref} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem' }}>
+                (פתיחה ↗)
+              </a>
+            )}
+          </label>
+          <input
+            id="instagram"
+            type="text"
+            value={fields.instagram}
+            onChange={(e) => handleFieldChange('instagram', e.target.value)}
+            placeholder="@username או קישור מלא"
+          />
+        </div>
+        <div className="field" style={{ marginBottom: 0 }}>
+          <label htmlFor="start-date">תאריך תחילת פרויקט</label>
+          <input
+            id="start-date"
+            type="date"
+            value={fields.project_start_date}
+            onChange={(e) => handleFieldChange('project_start_date', e.target.value)}
+          />
+        </div>
+      </div>
+
+      <h3 style={{ marginTop: '1.8em' }}>התיקייה</h3>
+      <div className="tile-grid">
+        <Link to={`/clients/${clientId}/survey`} className="tile">
+          <div className="tile-icon">
+            <SurveyTileIcon />
+          </div>
+          <div className="tile-title">שאלון אפיון</div>
+          <div className="tile-status">
+            {survey === undefined && 'טוען...'}
+            {survey === null && 'לא נוצר עדיין'}
+            {survey && (answered ? 'נענה' : 'טרם נענה')}
+          </div>
+        </Link>
+
+        <Link to={`/clients/${clientId}/summary`} className="tile">
+          <div className="tile-icon">
+            <SummaryTileIcon />
+          </div>
+          <div className="tile-title">סיכום שיחת אפיון</div>
+          <div className="tile-status">
+            {client.discovery_summary?.replace(/<[^>]*>/g, '').trim() ? 'יש תוכן' : 'עדיין ריק'}
+          </div>
+        </Link>
       </div>
     </AdminLayout>
   )

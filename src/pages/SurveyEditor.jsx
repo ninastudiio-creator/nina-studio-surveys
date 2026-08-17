@@ -105,7 +105,7 @@ export default function SurveyEditor({ isEditing }) {
         return
       }
     }
-    navigate(`/clients/${clientId}`)
+    navigate(`/clients/${clientId}/survey`)
   }
 
   if (loading) {
@@ -242,7 +242,7 @@ export default function SurveyEditor({ isEditing }) {
           <button type="submit" className="btn btn-primary" disabled={saving}>
             {saving ? 'שומרת...' : 'שמירת שאלון'}
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => navigate(`/clients/${clientId}`)}>
+          <button type="button" className="btn btn-ghost" onClick={() => navigate(`/clients/${clientId}/survey`)}>
             ביטול
           </button>
         </div>
