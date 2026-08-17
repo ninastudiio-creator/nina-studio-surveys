@@ -6,7 +6,7 @@ import ClientDetail from './pages/ClientDetail'
 import SurveyHub from './pages/SurveyHub'
 import SurveyEditor from './pages/SurveyEditor'
 import SurveyResponses from './pages/SurveyResponses'
-import SummaryEditor from './pages/SummaryEditor'
+import DocumentEditor from './pages/DocumentEditor'
 import PublicSurvey from './pages/PublicSurvey'
 
 export default function App() {
@@ -33,10 +33,10 @@ export default function App() {
           }
         />
         <Route
-          path="/clients/:clientId/summary"
+          path="/clients/:clientId/documents/:documentId"
           element={
             <ProtectedRoute>
-              <SummaryEditor />
+              <DocumentEditor />
             </ProtectedRoute>
           }
         />

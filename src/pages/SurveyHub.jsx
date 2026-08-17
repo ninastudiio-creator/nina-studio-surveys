@@ -45,7 +45,7 @@ export default function SurveyHub() {
     navigate(`/clients/${clientId}`)
   }
 
-  const answered = survey?.responses?.length > 0
+  const answered = Boolean(survey?.responses)
 
   return (
     <AdminLayout>

@@ -21,7 +21,7 @@ function StatusBadge({ survey }) {
       </span>
     )
   }
-  const answered = survey.responses?.length > 0
+  const answered = Boolean(survey.responses)
   return (
     <span
       style={{
@@ -102,7 +102,7 @@ export default function ClientsList() {
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="שם הלקוח, לדוגמה: SARU - מיטל"
+            placeholder="שם הפרויקט, לדוגמה: Saru"
             autoFocus
             style={{ flex: 1 }}
           />
@@ -124,7 +124,7 @@ export default function ClientsList() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9em' }}>
         {clients?.map((client) => {
-          const survey = client.surveys?.[0]
+          const survey = client.surveys
           return (
             <div
               key={client.id}

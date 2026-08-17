@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/AdminLayout'
 
@@ -19,7 +19,7 @@ const SurveyTileIcon = () => (
   </svg>
 )
 
-const SummaryTileIcon = () => (
+const DocumentTileIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
     <path d="M4 20V6a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
     <path d="M14 4v5a1 1 0 0 0 1 1h5" />
@@ -29,20 +29,22 @@ const SummaryTileIcon = () => (
 
 export default function ClientDetail() {
   const { clientId } = useParams()
+  const navigate = useNavigate()
 
   const [client, setClient] = useState(null)
-  const [fields, setFields] = useState({ phone: '', email: '', instagram: '', project_start_date: '' })
+  const [fields, setFields] = useState({ contact_name: '', phone: '', email: '', instagram: '', project_start_date: '' })
   const [survey, setSurvey] = useState(undefined) // undefined = loading, null = none yet
+  const [documents, setDocuments] = useState(null)
   const [fieldsSaveState, setFieldsSaveState] = useState('idle') // idle | saving | saved
   const [error, setError] = useState('')
-  const [copied, setCopied] = useState(false)
+  const [creatingDoc, setCreatingDoc] = useState(false)
 
   const saveTimer = useRef(null)
 
   async function load() {
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id, name, phone, email, instagram, project_start_date, discovery_summary')
+      .select('id, name, contact_name, phone, email, instagram, project_start_date')
       .eq('id', clientId)
       .single()
 
@@ -52,6 +54,7 @@ export default function ClientDetail() {
     }
     setClient(clientData)
     setFields({
+      contact_name: clientData.contact_name || '',
       phone: clientData.phone || '',
       email: clientData.email || '',
       instagram: clientData.instagram || '',
@@ -65,6 +68,14 @@ export default function ClientDetail() {
       .maybeSingle()
 
     setSurvey(surveyData || null)
+
+    const { data: documentsData } = await supabase
+      .from('documents')
+      .select('id, title, updated_at')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: true })
+
+    setDocuments(documentsData || [])
   }
 
   useEffect(() => {
@@ -94,11 +105,19 @@ export default function ClientDetail() {
     })
   }
 
-  function copyLink() {
-    const url = `${window.location.origin}${window.location.pathname}#/survey/${survey.public_token}`
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1800)
+  async function handleNewDocument() {
+    setCreatingDoc(true)
+    const { data, error } = await supabase
+      .from('documents')
+      .insert({ client_id: clientId, title: 'מסמך חדש' })
+      .select('id')
+      .single()
+    setCreatingDoc(false)
+    if (error) {
+      alert('יצירת מסמך נכשלה')
+      return
+    }
+    navigate(`/clients/${clientId}/documents/${data.id}`)
   }
 
   if (error) {
@@ -117,8 +136,7 @@ export default function ClientDetail() {
     )
   }
 
-  const answered = survey?.responses?.length > 0
-  const igHref = instagramHref(fields.instagram)
+  const answered = Boolean(survey?.responses)
 
   return (
     <AdminLayout>
@@ -126,13 +144,25 @@ export default function ClientDetail() {
         ← חזרה ללקוחות שלי
       </Link>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8em', marginTop: '0.5em' }}>
-        <h1 style={{ margin: 0 }}>{client.name}</h1>
-        {survey && (
-          <button className="btn btn-secondary btn-sm" onClick={copyLink}>
-            {copied ? 'הועתק!' : 'העתקת קישור השאלון'}
-          </button>
-        )}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.8em', marginTop: '0.5em' }}>
+        <div>
+          <h1 style={{ margin: 0 }}>{client.name}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em', marginTop: '0.4em' }}>
+            <label htmlFor="start-date" style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+              תאריך תחילת פרויקט:
+            </label>
+            <input
+              id="start-date"
+              type="date"
+              value={fields.project_start_date}
+              onChange={(e) => handleFieldChange('project_start_date', e.target.value)}
+              style={{ border: 'none', background: 'transparent', padding: '0.2em 0', fontSize: '0.85rem', color: 'var(--color-navy)' }}
+            />
+          </div>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={handleNewDocument} disabled={creatingDoc}>
+          {creatingDoc ? 'יוצרת...' : '+ מסמך חדש'}
+        </button>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.8em' }}>
@@ -143,6 +173,16 @@ export default function ClientDetail() {
       </div>
 
       <div className="card client-fields-grid" style={{ marginTop: '0.6em' }}>
+        <div className="field" style={{ marginBottom: 0 }}>
+          <label htmlFor="contact-name">שם</label>
+          <input
+            id="contact-name"
+            type="text"
+            value={fields.contact_name}
+            onChange={(e) => handleFieldChange('contact_name', e.target.value)}
+            placeholder="שם איש/אשת הקשר"
+          />
+        </div>
         <div className="field" style={{ marginBottom: 0 }}>
           <label htmlFor="phone">טלפון</label>
           <input
@@ -165,8 +205,9 @@ export default function ClientDetail() {
         </div>
         <div className="field" style={{ marginBottom: 0 }}>
           <label htmlFor="instagram">
-            אינסטגרם {igHref && (
-              <a href={igHref} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem' }}>
+            אינסטגרם{' '}
+            {instagramHref(fields.instagram) && (
+              <a href={instagramHref(fields.instagram)} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem' }}>
                 (פתיחה ↗)
               </a>
             )}
@@ -179,18 +220,9 @@ export default function ClientDetail() {
             placeholder="@username או קישור מלא"
           />
         </div>
-        <div className="field" style={{ marginBottom: 0 }}>
-          <label htmlFor="start-date">תאריך תחילת פרויקט</label>
-          <input
-            id="start-date"
-            type="date"
-            value={fields.project_start_date}
-            onChange={(e) => handleFieldChange('project_start_date', e.target.value)}
-          />
-        </div>
       </div>
 
-      <h3 style={{ marginTop: '1.8em' }}>התיקייה</h3>
+      <h3 style={{ marginTop: '1.8em' }}>חומרי עבודה</h3>
       <div className="tile-grid">
         <Link to={`/clients/${clientId}/survey`} className="tile">
           <div className="tile-icon">
@@ -204,15 +236,15 @@ export default function ClientDetail() {
           </div>
         </Link>
 
-        <Link to={`/clients/${clientId}/summary`} className="tile">
-          <div className="tile-icon">
-            <SummaryTileIcon />
-          </div>
-          <div className="tile-title">סיכום שיחת אפיון</div>
-          <div className="tile-status">
-            {client.discovery_summary?.replace(/<[^>]*>/g, '').trim() ? 'יש תוכן' : 'עדיין ריק'}
-          </div>
-        </Link>
+        {documents?.map((doc) => (
+          <Link key={doc.id} to={`/clients/${clientId}/documents/${doc.id}`} className="tile">
+            <div className="tile-icon">
+              <DocumentTileIcon />
+            </div>
+            <div className="tile-title">{doc.title}</div>
+            <div className="tile-status">עודכן ב-{new Date(doc.updated_at).toLocaleDateString('he-IL')}</div>
+          </Link>
+        ))}
       </div>
     </AdminLayout>
   )
