@@ -1,7 +1,8 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
+import ClientsList from './pages/ClientsList'
+import ClientDetail from './pages/ClientDetail'
 import SurveyEditor from './pages/SurveyEditor'
 import SurveyResponses from './pages/SurveyResponses'
 import PublicSurvey from './pages/PublicSurvey'
@@ -17,28 +18,36 @@ export default function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <ClientsList />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/surveys/new"
+          path="/clients/:clientId"
           element={
             <ProtectedRoute>
-              <SurveyEditor />
+              <ClientDetail />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/surveys/:id/edit"
+          path="/clients/:clientId/survey/new"
           element={
             <ProtectedRoute>
-              <SurveyEditor />
+              <SurveyEditor isEditing={false} />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/surveys/:id/responses"
+          path="/clients/:clientId/survey/edit"
+          element={
+            <ProtectedRoute>
+              <SurveyEditor isEditing={true} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:clientId/survey/responses"
           element={
             <ProtectedRoute>
               <SurveyResponses />

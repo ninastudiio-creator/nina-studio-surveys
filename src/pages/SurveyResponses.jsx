@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import AdminLayout from '../components/AdminLayout'
 
 export default function SurveyResponses() {
-  const { id } = useParams()
+  const { clientId } = useParams()
   const [survey, setSurvey] = useState(null)
   const [response, setResponse] = useState(null)
   const [error, setError] = useState('')
@@ -13,8 +13,8 @@ export default function SurveyResponses() {
     async function load() {
       const { data: surveyData, error: surveyError } = await supabase
         .from('surveys')
-        .select('title, questions, public_token')
-        .eq('id', id)
+        .select('id, title, questions, public_token')
+        .eq('client_id', clientId)
         .single()
 
       if (surveyError || !surveyData) {
@@ -26,13 +26,13 @@ export default function SurveyResponses() {
       const { data: responseData } = await supabase
         .from('responses')
         .select('answers, updated_at')
-        .eq('survey_id', id)
+        .eq('survey_id', surveyData.id)
         .maybeSingle()
 
       setResponse(responseData)
     }
     load()
-  }, [id])
+  }, [clientId])
 
   if (error) {
     return (
@@ -52,8 +52,8 @@ export default function SurveyResponses() {
 
   return (
     <AdminLayout>
-      <Link to="/" style={{ fontSize: '0.9rem' }}>
-        ← חזרה לרשימת השאלונים
+      <Link to={`/clients/${clientId}`} style={{ fontSize: '0.9rem' }}>
+        ← חזרה ללקוח
       </Link>
       <h1 style={{ marginTop: '0.5em' }}>{survey.title}</h1>
 

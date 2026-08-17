@@ -11,9 +11,8 @@ function newSection() {
   return { id: crypto.randomUUID(), label: '', type: 'section' }
 }
 
-export default function SurveyEditor() {
-  const { id } = useParams()
-  const isEditing = Boolean(id)
+export default function SurveyEditor({ isEditing }) {
+  const { clientId } = useParams()
   const navigate = useNavigate()
 
   const [title, setTitle] = useState('')
@@ -29,7 +28,7 @@ export default function SurveyEditor() {
       const { data, error } = await supabase
         .from('surveys')
         .select('title, intro, questions')
-        .eq('id', id)
+        .eq('client_id', clientId)
         .single()
 
       if (error || !data) {
@@ -43,7 +42,7 @@ export default function SurveyEditor() {
       setLoading(false)
     }
     load()
-  }, [id, isEditing])
+  }, [clientId, isEditing])
 
   function updateQuestion(qid, patch) {
     setQuestions((prev) => prev.map((q) => (q.id === qid ? { ...q, ...patch } : q)))
@@ -92,21 +91,21 @@ export default function SurveyEditor() {
 
     setSaving(true)
     if (isEditing) {
-      const { error } = await supabase.from('surveys').update(payload).eq('id', id)
+      const { error } = await supabase.from('surveys').update(payload).eq('client_id', clientId)
       setSaving(false)
       if (error) {
         setError('שמירה נכשלה')
         return
       }
     } else {
-      const { error } = await supabase.from('surveys').insert(payload)
+      const { error } = await supabase.from('surveys').insert({ ...payload, client_id: clientId })
       setSaving(false)
       if (error) {
         setError('יצירה נכשלה')
         return
       }
     }
-    navigate('/')
+    navigate(`/clients/${clientId}`)
   }
 
   if (loading) {
@@ -243,7 +242,7 @@ export default function SurveyEditor() {
           <button type="submit" className="btn btn-primary" disabled={saving}>
             {saving ? 'שומרת...' : 'שמירת שאלון'}
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => navigate('/')}>
+          <button type="button" className="btn btn-ghost" onClick={() => navigate(`/clients/${clientId}`)}>
             ביטול
           </button>
         </div>
